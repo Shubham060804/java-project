@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Complaint Admin</a>
+        <div>
+            <a class="btn btn-outline-light" href="/">Submit complaint</a>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title mb-3">Complaint Administration</h4>
+            <form method="get" action="/admin" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Filter by department</label>
+                    <select name="department" class="form-select">
+                        <option value="">All Departments</option>
+                        <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept.displayName}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2 align-self-end">
+                    <button class="btn btn-primary" type="submit">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Department</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Update</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="complaint : ${complaints}">
+                <td th:text="${complaint.id}"></td>
+                <td>
+                    <div th:text="${complaint.customerName}"></div>
+                    <small class="text-muted" th:text="${complaint.customerEmail}"></small>
+                </td>
+                <td th:text="${complaint.department.displayName}"></td>
+                <td>
+                    <strong th:text="${complaint.subject}"></strong>
+                    <p class="mb-1" th:text="${complaint.description}"></p>
+                    <small class="text-muted" th:text="${complaint.submittedAt}"></small>
+                </td>
+                <td>
+                    <span class="badge" th:classappend="' badge-' + ${complaint.status.name().toLowerCase().replace('_','-')}" th:text="${complaint.status}"></span>
+                </td>
+                <td th:text="${complaint.priority}"></td>
+                <td>
+                    <form th:action="@{/admin/update/{id}(id=${complaint.id})}" method="post" class="d-flex gap-2">
+                        <select name="status" class="form-select form-select-sm">
+                            <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option>
+                        </select>
+                        <button class="btn btn-sm btn-success">Save</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${complaints.isEmpty()}">
+                <td colspan="7" class="text-center">No complaints found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="/js/script.js"></script>
+</body>
+</html>
